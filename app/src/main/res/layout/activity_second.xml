@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    android:id="@+id/widget28"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:background="#33b21f"
+    android:orientation="vertical"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    >
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:id="@+id/scrollView" >
+
+        <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+    <Button
+        android:id="@+id/btnStop"
+        android:layout_width="125dip"
+        android:layout_height="75dip"
+        android:layout_gravity="center_horizontal"
+        android:text="Stop" />
+
+    <TextView android:id="@+id/Fahrer"
+        android:layout_width="fill_parent"
+        android:layout_height="50dip"
+        android:layout_margin="15dip"
+        android:textSize="18dip"
+        android:background="#3d9d2d"/>
+
+    <TextView android:id="@+id/Fahrzeug"
+        android:layout_width="fill_parent"
+        android:layout_height="50dip"
+        android:layout_margin="15dip"
+        android:textSize="18dip"
+        android:background="#3d9d2d"/>
+
+    <TextView android:id="@+id/Bemerkungen"
+        android:layout_width="fill_parent"
+        android:layout_height="50dip"
+        android:layout_margin="15dip"
+        android:textSize="18dip"
+        android:background="#3d9d2d"/>
+
+
+        </LinearLayout>
+
+    </ScrollView>
+
+</LinearLayout>
