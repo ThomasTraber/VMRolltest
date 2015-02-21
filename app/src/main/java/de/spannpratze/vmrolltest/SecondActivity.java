@@ -21,6 +21,7 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.sql.Timestamp;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 
 /**
@@ -36,7 +37,8 @@ public class SecondActivity extends Activity {
     private SensorManager mSensorManager;
     private Sensor sensor;
     private final String geti = gt();
-    String path = Environment.getExternalStorageDirectory().getPath() + "/vmrolltest/" + geti + ".csv";
+    String fileName = new SimpleDateFormat("yyyyMMddhhmm").format(new Date());
+    String path = Environment.getExternalStorageDirectory().getPath() + "/vmrolltest/" + fileName + ".csv";
     private static final String TAG = SecondActivity.class.getSimpleName();
 
     public String gt() {
@@ -116,6 +118,7 @@ public class SecondActivity extends Activity {
     private void save (String s) {
         try {
             myFile = new File(path);
+            System.out.println(path);
             //wenn das File nicht existiert -> Folders und File erstellen
             if(!myFile.exists()) {
                 myFile.getParentFile().mkdirs();
