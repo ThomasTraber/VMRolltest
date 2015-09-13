@@ -30,6 +30,7 @@ public class SecondActivity extends Activity {
 
     Button btnStop;
     File myFile;
+    BufferedWriter out;
     float[] werte;
     int i = 0;
     private SensorEventListener listener;
@@ -57,7 +58,13 @@ public class SecondActivity extends Activity {
         Fahrer.setText(fahrer);
         Fahrzeug.setText(fahrzeug);
         Bemerkungen.setText(bemerkungen);
+        try{
         myFile=open(path);
+        out = new BufferedWriter(new FileWriter(myFile, true));
+        } catch (IOException ex) {
+            System.out.println("Error: " + ex.getMessage());
+            ex.printStackTrace();
+        }
 
         try {
             save("#Fahrer:\t"+fahrer);
@@ -136,10 +143,8 @@ public class SecondActivity extends Activity {
      */
     private void save (String s) {
         try {
-            BufferedWriter out = new BufferedWriter(new FileWriter(myFile, true));
             out.write(s);
             out.write("\n");
-            out.close();
         } catch (IOException ex) {
             System.out.println("Error: " + ex.getMessage());
             ex.printStackTrace();
