@@ -20,7 +20,6 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
@@ -36,15 +35,9 @@ public class SecondActivity extends Activity {
     private SensorEventListener listener;
     private SensorManager mSensorManager;
     private Sensor sensor;
-    private final String geti = gt();
     String fileName = new SimpleDateFormat("yyyyMMddhhmm").format(new Date());
     String path = Environment.getExternalStorageDirectory().getPath() + "/vmrolltest/" + fileName + ".csv";
     private static final String TAG = SecondActivity.class.getSimpleName();
-
-    public String gt() {
-        Timestamp timestamp = new Timestamp(new Date().getTime());
-        return timestamp.toString();
-    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -66,8 +59,10 @@ public class SecondActivity extends Activity {
         Bemerkungen.setText(bemerkungen);
 
         try {
-            save("sep=;\n" +"Name;Fahrzeug;Bemerkungen\n"+fahrer+";"+fahrzeug+";"+bemerkungen+"\n"+
-                    "MAGNETIC FIELD X (μT);MAGNETIC FIELD Y (μT);MAGNETIC FIELD Z (μT);YYYY-MO-DD HH-MI-SS_SSS");
+            save("#Fahrer:\t"+fahrer);
+            save("#Fahrzeug:\t"+fahrzeug);
+            save("#Bemerkungen:\t"+bemerkungen);
+            save("#Time/ns\tMAGNETIC FIELD X /μT\tMAGNETIC FIELD Y /μT\tMAGNETIC FIELD Z /μT");
             Toast.makeText(getBaseContext(),
                     "Auf geht's",
                     Toast.LENGTH_SHORT).show();
@@ -80,7 +75,7 @@ public class SecondActivity extends Activity {
         mSensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
         sensor = mSensorManager.getDefaultSensor(Sensor.TYPE_MAGNETIC_FIELD);
         if (sensor == null) {
-            Log.d(TAG, "kein Sensor vorhangen");
+            Log.d(TAG, "kein Sensor vorhanden");
             // Activity beenden
             finish();
         }
@@ -98,7 +93,8 @@ public class SecondActivity extends Activity {
                     String x = String.valueOf(werte[0]);
                     String y = String.valueOf(werte[1]);
                     String z = String.valueOf(werte[2]);
-                    save(x + ";" + y + ";" + z + ";" + gt());
+                    String t = String.valueOf(event.timestamp);
+                    save(t + "\t" + x + "\t" + y + "\t" + z + "\t");
                 }
             }
         };
@@ -115,6 +111,8 @@ public class SecondActivity extends Activity {
         });
     }
 
+    /* TODO: sollte man das File nicht besser offen lassen, um die Systemload zu verringern ?
+     */
     private void save (String s) {
         try {
             myFile = new File(path);
@@ -128,7 +126,6 @@ public class SecondActivity extends Activity {
             out.write(s);
             out.write("\n");
             out.close();
-            MediaScannerConnection.scanFile(this, new String[] {myFile.getAbsolutePath()}, null, null);
         } catch (IOException ex) {
             System.out.println("Error: " + ex.getMessage());
             ex.printStackTrace();
