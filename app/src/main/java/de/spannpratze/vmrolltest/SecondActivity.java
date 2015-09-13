@@ -57,6 +57,7 @@ public class SecondActivity extends Activity {
         Fahrer.setText(fahrer);
         Fahrzeug.setText(fahrzeug);
         Bemerkungen.setText(bemerkungen);
+        myFile=open(path);
 
         try {
             save("#Fahrer:\t"+fahrer);
@@ -111,17 +112,30 @@ public class SecondActivity extends Activity {
         });
     }
 
-    /* TODO: sollte man das File nicht besser offen lassen, um die Systemload zu verringern ?
-     */
-    private void save (String s) {
+    private File open (String path) {
         try {
             myFile = new File(path);
-            System.out.println(path);
             //wenn das File nicht existiert -> Folders und File erstellen
             if(!myFile.exists()) {
                 myFile.getParentFile().mkdirs();
                 myFile.createNewFile();
             }
+            //BufferedWriter out = new BufferedWriter(new FileWriter(myFile, true));
+            //out.write(s);
+            //out.write("\n");
+            //out.close();
+        } catch (IOException ex) {
+            System.out.println("Error: " + ex.getMessage());
+            ex.printStackTrace();
+        }
+        return myFile;
+    }
+
+
+    /* TODO: sollte man das File nicht besser offen lassen, um die Systemload zu verringern ?
+     */
+    private void save (String s) {
+        try {
             BufferedWriter out = new BufferedWriter(new FileWriter(myFile, true));
             out.write(s);
             out.write("\n");
