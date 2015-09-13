@@ -152,6 +152,12 @@ public class SecondActivity extends Activity {
     }
 
     protected void onDestroy() {
+        try{
+        out.close();     //ist zwar die falsche Stelle, aber fuer den Anfang sollte es reichen
+        } catch (IOException ex) {
+            System.out.println("Error: " + ex.getMessage());
+            ex.printStackTrace();
+        }
         super.onDestroy();
         if (sensor != null) {
             mSensorManager.unregisterListener(listener);
