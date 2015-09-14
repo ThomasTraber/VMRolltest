@@ -32,13 +32,18 @@ public class SecondActivity extends Activity {
     File myFile;
     BufferedWriter out;
     float[] werte;
-    int i = 0;
     private SensorEventListener listener;
     private SensorManager mSensorManager;
     private Sensor sensor;
+    int sensordelay = SensorManager.SENSOR_DELAY_FASTEST;
+    //int sensordelay = SensorManager.SENSOR_DELAY_NORMAL;      //200ms. Zu langsam für Rolltesting
+    //int sensordelay = SensorManager.SENSOR_DELAY_UI;          //60 ms 
+    //int sensordelay = SensorManager.SENSOR_DELAY_GAME;        //20 ms
     String fileName = new SimpleDateFormat("yyyyMMddhhmm").format(new Date());
     String path = Environment.getExternalStorageDirectory().getPath() + "/vmrolltest/" + fileName + ".csv";
     private static final String TAG = SecondActivity.class.getSimpleName();
+    String savedata;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -67,10 +72,10 @@ public class SecondActivity extends Activity {
         }
 
         try {
-            save("#Fahrer:\t"+fahrer);
-            save("#Fahrzeug:\t"+fahrzeug);
-            save("#Bemerkungen:\t"+bemerkungen);
-            save("#Time/ns\tMAGNETIC FIELD X /μT\tMAGNETIC FIELD Y /μT\tMAGNETIC FIELD Z /μT");
+            saveln("#Fahrer:\t"+fahrer);
+            saveln("#Fahrzeug:\t"+fahrzeug);
+            saveln("#Bemerkungen:\t"+bemerkungen);
+            saveln("#Time/ns\tMAGNETIC FIELD X /μT\tMAGNETIC FIELD Y /μT\tMAGNETIC FIELD Z /μT");
             Toast.makeText(getBaseContext(),
                     "Auf geht's",
                     Toast.LENGTH_SHORT).show();
@@ -95,18 +100,16 @@ public class SecondActivity extends Activity {
 
             @Override
             public void onSensorChanged(SensorEvent event) {
-                i++;
                 if (event.sensor.getType() == Sensor.TYPE_MAGNETIC_FIELD){
-                    werte = event.values.clone();
-                    String x = String.valueOf(werte[0]);
-                    String y = String.valueOf(werte[1]);
-                    String z = String.valueOf(werte[2]);
-                    String t = String.valueOf(event.timestamp);
-                    save(t + "\t" + x + "\t" + y + "\t" + z + "\t");
+                    savedata = String.valueOf(event.timestamp) + "\t"
+                        + String.valueOf(event.values[0]) + "\t" 
+                        + String.valueOf(event.values[1]) + "\t"
+                        + String.valueOf(event.values[2]);
+                    saveln(savedata);
                 }
             }
         };
-        mSensorManager.registerListener(listener, sensor, SensorManager.SENSOR_DELAY_FASTEST);
+        mSensorManager.registerListener(listener, sensor, sensordelay);
 
         btnStop = (Button) findViewById(R.id.btnStop);
         btnStop.setOnClickListener(new View.OnClickListener() {
@@ -127,10 +130,6 @@ public class SecondActivity extends Activity {
                 myFile.getParentFile().mkdirs();
                 myFile.createNewFile();
             }
-            //BufferedWriter out = new BufferedWriter(new FileWriter(myFile, true));
-            //out.write(s);
-            //out.write("\n");
-            //out.close();
         } catch (IOException ex) {
             System.out.println("Error: " + ex.getMessage());
             ex.printStackTrace();
@@ -139,12 +138,9 @@ public class SecondActivity extends Activity {
     }
 
 
-    /* TODO: sollte man das File nicht besser offen lassen, um die Systemload zu verringern ?
-     */
-    private void save (String s) {
+    private void saveln (String s) {
         try {
-            out.write(s);
-            out.write("\n");
+            out.write(s + "\n");
         } catch (IOException ex) {
             System.out.println("Error: " + ex.getMessage());
             ex.printStackTrace();
