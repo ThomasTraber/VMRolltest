@@ -31,10 +31,13 @@ public class SecondActivity extends Activity {
     Button btnStop;
     File myFile;
     BufferedWriter out;
-    float[] werte;
-    private SensorEventListener listener;
+    boolean use_acc=false;
+    boolean use_mag=true;
+    private SensorEventListener acclistener;
+    private SensorEventListener maglistener;
     private SensorManager mSensorManager;
-    private Sensor sensor;
+    private Sensor accsensor;
+    private Sensor magsensor;
     int sensordelay = SensorManager.SENSOR_DELAY_FASTEST;
     //int sensordelay = SensorManager.SENSOR_DELAY_NORMAL;      //200ms. Zu langsam für Rolltesting
     //int sensordelay = SensorManager.SENSOR_DELAY_UI;          //60 ms 
@@ -75,10 +78,10 @@ public class SecondActivity extends Activity {
             saveln("#Fahrer:\t"+fahrer);
             saveln("#Fahrzeug:\t"+fahrzeug);
             saveln("#Bemerkungen:\t"+bemerkungen);
-            saveln("#Time/ns\tMAGNETIC FIELD X /μT\tMAGNETIC FIELD Y /μT\tMAGNETIC FIELD Z /μT");
-            Toast.makeText(getBaseContext(),
-                    "Auf geht's",
-                    Toast.LENGTH_SHORT).show();
+            if (use_mag)
+                saveln("#Time/ns\tMAGNETIC FIELD X /μT\tMAGNETIC FIELD Y /μT\tMAGNETIC FIELD Z /μT");
+            if (use_acc)
+                saveln("#Time/ns\tACCX\tACCY\tACCZ");
         }
         catch (Exception e) {
             Toast.makeText(getBaseContext(), e.getMessage(),
@@ -86,30 +89,60 @@ public class SecondActivity extends Activity {
         }
 
         mSensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
-        sensor = mSensorManager.getDefaultSensor(Sensor.TYPE_MAGNETIC_FIELD);
-        if (sensor == null) {
-            Log.d(TAG, "kein Sensor vorhanden");
-            // Activity beenden
-            finish();
-        }
-        listener = new SensorEventListener() {
-
-            @Override
-            public void onAccuracyChanged(Sensor sensor, int accuracy) {
-            }
-
-            @Override
-            public void onSensorChanged(SensorEvent event) {
-                if (event.sensor.getType() == Sensor.TYPE_MAGNETIC_FIELD){
-                    savedata = String.valueOf(event.timestamp) + "\t"
-                        + String.valueOf(event.values[0]) + "\t" 
-                        + String.valueOf(event.values[1]) + "\t"
-                        + String.valueOf(event.values[2]);
-                    saveln(savedata);
+        if (use_acc){
+            accsensor = mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
+            if (accsensor == null){
+                Log.d(TAG, "kein Sensor vorhanden");
+                finish();
                 }
-            }
-        };
-        mSensorManager.registerListener(listener, sensor, sensordelay);
+            acclistener = new SensorEventListener() {
+
+                @Override
+                public void onAccuracyChanged(Sensor sensor, int accuracy) {
+                }
+
+                @Override
+                public void onSensorChanged(SensorEvent event) {
+                    if (event.sensor.getType() == Sensor.TYPE_ACCELEROMETER){
+                        savedata = "a\t" + String.valueOf(event.timestamp) + "\t"
+                            + String.valueOf(event.values[0]) + "\t" 
+                            + String.valueOf(event.values[1]) + "\t"
+                            + String.valueOf(event.values[2]);
+                        saveln(savedata);
+                    }
+                }
+            };
+            mSensorManager.registerListener(acclistener, accsensor, sensordelay);
+        }
+
+        if (use_mag){
+            //magsensor = mSensorManager.getDefaultSensor(Sensor.TYPE_MAGNETIC_FIELD_UNCALIBRATED);
+            magsensor = mSensorManager.getDefaultSensor(Sensor.TYPE_MAGNETIC_FIELD);
+            if (magsensor == null){
+                Log.d(TAG, "kein Sensor vorhanden");
+                finish();
+                }
+            maglistener = new SensorEventListener() {
+
+                @Override
+                public void onAccuracyChanged(Sensor sensor, int accuracy) {
+                }
+
+                @Override
+                public void onSensorChanged(SensorEvent event) {
+                    if (event.sensor.getType() == Sensor.TYPE_MAGNETIC_FIELD){
+                    //if (event.sensor.getType() == Sensor.TYPE_MAGNETIC_FIELD_UNCALIBRATED){
+                        savedata = "m\t" + String.valueOf(event.timestamp) + "\t"
+                            + String.valueOf(event.values[0]) + "\t" 
+                            + String.valueOf(event.values[1]) + "\t"
+                            + String.valueOf(event.values[2]);
+                        saveln(savedata);
+                    }
+                }
+            };
+            mSensorManager.registerListener(maglistener, magsensor, sensordelay);
+        }
+
 
         btnStop = (Button) findViewById(R.id.btnStop);
         btnStop.setOnClickListener(new View.OnClickListener() {
@@ -155,8 +188,11 @@ public class SecondActivity extends Activity {
             ex.printStackTrace();
         }
         super.onDestroy();
-        if (sensor != null) {
-            mSensorManager.unregisterListener(listener);
+        if (accsensor != null) {
+            mSensorManager.unregisterListener(acclistener);
+        }
+        if (magsensor != null) {
+            mSensorManager.unregisterListener(maglistener);
         }
     }
 }
