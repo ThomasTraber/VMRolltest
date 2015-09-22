@@ -120,6 +120,8 @@ public class SecondActivity extends Activity {
             magsensor = mSensorManager.getDefaultSensor(Sensor.TYPE_MAGNETIC_FIELD);
             if (magsensor == null){
                 Log.d(TAG, "kein Sensor vorhanden");
+                Toast.makeText(this,"Kein Magnetsensor vorhanden",
+                    Toast.LENGTH_SHORT).show();
                 finish();
                 }
             maglistener = new SensorEventListener() {
