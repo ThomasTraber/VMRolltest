@@ -43,7 +43,7 @@ public class SecondActivity extends Activity {
     //int sensordelay = SensorManager.SENSOR_DELAY_UI;          //60 ms 
     //int sensordelay = SensorManager.SENSOR_DELAY_GAME;        //20 ms
     String fileName = new SimpleDateFormat("yyyyMMddhhmm").format(new Date());
-    String path = Environment.getExternalStorageDirectory().getPath() + "/vmrolltest/" + fileName + ".csv";
+    String path = Environment.getExternalStorageDirectory().getPath() + "/vmrolltest/" + fileName + ".tsv";
     private static final String TAG = SecondActivity.class.getSimpleName();
     String savedata;
 
