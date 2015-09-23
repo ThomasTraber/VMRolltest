@@ -10,6 +10,7 @@ import android.hardware.SensorManager;
 import android.media.MediaScannerConnection;
 import android.os.Bundle;
 import android.os.Environment;
+import android.os.Handler;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -39,6 +40,7 @@ public class SecondActivity extends Activity {
     private Sensor accsensor;
     private Sensor magsensor;
     int sensordelay = SensorManager.SENSOR_DELAY_FASTEST;
+    int timerperiod = 5000;
     //int sensordelay = SensorManager.SENSOR_DELAY_NORMAL;      //200ms. Zu langsam für Rolltesting
     //int sensordelay = SensorManager.SENSOR_DELAY_UI;          //60 ms 
     //int sensordelay = SensorManager.SENSOR_DELAY_GAME;        //20 ms
@@ -46,7 +48,14 @@ public class SecondActivity extends Activity {
     String path = Environment.getExternalStorageDirectory().getPath() + "/vmrolltest/" + fileName + ".tsv";
     private static final String TAG = SecondActivity.class.getSimpleName();
     String savedata;
+    private Handler handler = new  Handler();
 
+    private Runnable timer = new Runnable() {
+        public void run(){
+            myfile.flush();
+            handler.postDelayed(this,timerperiod);
+        }
+    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -155,6 +164,7 @@ public class SecondActivity extends Activity {
                 finish();
             }
         });
+        handler.postDelayed(timer,timerperiod);
     }
 
     private File open (String path) {
